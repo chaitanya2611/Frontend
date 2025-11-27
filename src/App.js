@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
 // 🧱 Public components
@@ -20,7 +20,7 @@ export default function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       {isAdminLoggedIn ? (
         // 🔐 Logged in as admin → Dashboard view
         <Dashboard />
@@ -45,7 +45,7 @@ export default function App() {
           <Footer />
         </>
       )}
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
