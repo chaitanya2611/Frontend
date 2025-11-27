@@ -2,7 +2,6 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://chaitanya2611.github.io/Frontend",
   "dependencies": {
     "@fontsource/creepster": "^5.2.7",
     "@testing-library/dom": "^10.4.1",
