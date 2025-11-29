@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState } from "react";
 import API from "../api"; // axios instance
 
 export default function AddParticipant() {
@@ -12,51 +12,81 @@ export default function AddParticipant() {
     social_link: "",
   });
 
-  // const [events, setEvents] = useState([]); // events from backend
+  const [loading, setLoading] = useState(false);
 
-  // 🔄 Fetch events on load
-  // useEffect(() => {
-  //   const fetchEvents = async () => {
-  //     try {
-  //       const res = await API.get("/events");
-  //       setEvents(res.data);
-  //     } catch (err) {
-  //       console.error("Error fetching events:", err);
-  //     }
-  //   };
-  //   fetchEvents();
-  // }, []);
-
-  // ✏️ Handle input change
+  // 🔄 Input handler
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 🧩 Handle multi-event selection
-  // const handleEventSelect = (e) => {
-  //   const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
-  //   setForm({ ...form, events: selected });
-  // };
-
-  // 💾 Submit participant
-  const handleSubmit = async (e) => {
+  // 💰 Payment + Registration
+  const handlePay = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      await API.post("/participants", form);
-      alert("We will Contact you for further details");
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        college: "",
-        department: "",
-        year: "",
-        social_link: "",
-        events: [],
-      });
+      // 1) Create order on backend
+      const orderRes = await API.post("/payment/create-order", {});
+      const order = orderRes.data;
+
+      const options = {
+        key: process.env.REACT_APP_RZP_KEY,
+        amount: order.amount,
+        currency: "INR",
+        name: "GenVision",
+        description: "Participant Registration ₹500",
+        order_id: order.id,
+
+        handler: async function (response) {
+          try {
+            // 2) Verify payment on server
+            const verify = await API.post("/payment/verify", {
+              ...response,
+              formData: form,
+            });
+
+            if (verify.data.success) {
+              // 3) Save participant to DB
+              await API.post("/participants", form);
+
+              alert("🎉 Registration Successful! Check your email.");
+
+              // Clear form
+              setForm({
+                name: "",
+                email: "",
+                phone: "",
+                college: "",
+                department: "",
+                year: "",
+                social_link: "",
+              });
+            } else {
+              alert("❌ Payment verification failed");
+               document.body.style.overflow = "auto";
+            }
+          } catch (err) {
+            console.error(err);
+            alert("❌ Server verification error");
+          }
+        },
+
+        prefill: {
+          name: form.name,
+          email: form.email,
+          contact: form.phone,
+        },
+
+        theme: { color: "#3399cc" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
       console.error(err);
-      alert("❌ Error adding participant");
+      alert("❌ Order creation failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,7 +97,7 @@ export default function AddParticipant() {
           <h3 className="text-center mb-4">Be a Part of the GenVision</h3>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handlePay}
             className="d-flex flex-column align-items-center gap-3"
           >
             <input
@@ -79,6 +109,7 @@ export default function AddParticipant() {
               onChange={handleChange}
               required
             />
+
             <input
               type="email"
               className="form-control w-75"
@@ -88,6 +119,7 @@ export default function AddParticipant() {
               onChange={handleChange}
               required
             />
+
             <input
               type="text"
               className="form-control w-75"
@@ -96,6 +128,7 @@ export default function AddParticipant() {
               value={form.phone}
               onChange={handleChange}
             />
+
             <input
               type="text"
               className="form-control w-75"
@@ -104,6 +137,7 @@ export default function AddParticipant() {
               value={form.college}
               onChange={handleChange}
             />
+
             <input
               type="text"
               className="form-control w-75"
@@ -112,6 +146,7 @@ export default function AddParticipant() {
               value={form.department}
               onChange={handleChange}
             />
+
             <input
               type="text"
               className="form-control w-75"
@@ -120,8 +155,9 @@ export default function AddParticipant() {
               value={form.year}
               onChange={handleChange}
             />
+
             <input
-              type="string"
+              type="text"
               className="form-control w-75"
               placeholder="LinkedIn / Instagram link"
               name="social_link"
@@ -129,25 +165,12 @@ export default function AddParticipant() {
               onChange={handleChange}
             />
 
-            {/* 🌐 Multi-event selector */}
-            {/* <div className="w-75">
-              <label className="form-label fw-semibold">Select Events</label>
-              <select
-                multiple
-                className="form-select"
-                value={form.events}
-                onChange={handleEventSelect}
-              >
-                {events.map((ev) => (
-                  <option key={ev._id} value={ev._id}>
-                    {ev.name}
-                  </option>
-                ))}
-              </select>
-            </div> */}
-
-            <button type="submit" className="btn btn-success px-5 fw-semibold mt-3">
-              Count Me In
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-success px-5 fw-semibold mt-3"
+            >
+              {loading ? "Processing..." : "Count Me In"}
             </button>
           </form>
         </div>
@@ -155,4 +178,3 @@ export default function AddParticipant() {
     </div>
   );
 }
-
