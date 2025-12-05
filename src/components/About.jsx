@@ -9,12 +9,12 @@ export default function AboutPage() {
   const [flipped, setFlipped] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  const baseURL = "https://genvision-26.onrender.com"; // Server base URL
+  const baseURL = "https://http://localhost:5000.onrender.com"; // Server base URL
 
  const LazyImage = ({ src, alt, className, style }) => {
   if (!src) return null;
 
-  const baseURL = "https://genvision-26.onrender.com";
+
 
   // Path auto-fix logic
   const finalSrc = src.startsWith("http")
@@ -204,7 +204,7 @@ export default function AboutPage() {
             >
             {c.image && (
                 <img
-                  src={`https://genvision-26.onrender.com/${c.image.replace(/^\/+/, "")}`}
+                  src={`https://http://localhost:5000.onrender.com/${c.image.replace(/^\/+/, "")}`}
                   alt={c.name}
                   className="img-fluid"
                   style={{

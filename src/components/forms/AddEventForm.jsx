@@ -160,7 +160,7 @@ const handleEdit = (event) => {
             <div className="card h-100 text-center">
               {c.image && (
                  <img
-    src={`https://genvision-26.onrender.com/${c.image.replace(/^\/+/, "")}`}
+    src={`https://http://localhost:5000.onrender.com/${c.image.replace(/^\/+/, "")}`}
     className="card-img-top"
     alt={c.name}
     style={{ height: "250px", objectFit: "cover" }}

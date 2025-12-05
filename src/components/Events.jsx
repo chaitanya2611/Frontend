@@ -32,7 +32,7 @@ export default function Events() {
             >
               {ev.image && (
                 <img
-                  src={`https://genvision-26.onrender.com/${ev.image.replace(/^\/+/, "")}`}
+                  src={`https://http://localhost:5000.onrender.com/${ev.image.replace(/^\/+/, "")}`}
                   alt={ev.name}
                   className="img-fluid"
                   style={{

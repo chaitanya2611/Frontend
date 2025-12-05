@@ -13,7 +13,7 @@ export default function EditAbout() {
   const [posterFile, setPosterFile] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
 
-  const BASE_URL = "https://genvision-26.onrender.com"; // 🔥 base for all images
+  const BASE_URL = "https://http://localhost:5000.onrender.com"; // 🔥 base for all images
 
   useEffect(() => {
     const fetchAbout = async () => {
@@ -176,7 +176,7 @@ const removeGalleryImage = (index) => {
     src={
       s.logoPreview
         ? s.logoPreview // blob file selected, local preview
-        : `https://genvision-26.onrender.com/api${s.logo}` // existing server image
+        : `https://http://localhost:5000.onrender.com/api${s.logo}` // existing server image
     }
     alt={s.name || "Sponsor Preview"}
     style={{ width: "100px", height: "80px", objectFit: "cover" }}
